@@ -18,6 +18,10 @@ public class Employer extends Person{
     @Setter
     private String tenure;
 
+    @Getter
+    @Setter
+    private String companyName;
+
     @ManyToOne
     @JsonIgnore
     @Getter

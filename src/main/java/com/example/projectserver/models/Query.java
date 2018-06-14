@@ -1,8 +1,10 @@
 package com.example.projectserver.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -21,8 +23,11 @@ public class Query {
     @Setter
     private String post;
 
+    @CreationTimestamp
+    @Temporal(TemporalType.TIMESTAMP)
     @Getter
     @Setter
+    @JsonFormat(pattern="MM/dd/yyyy", timezone = "EST")
     private Date created;
 
     @Getter
