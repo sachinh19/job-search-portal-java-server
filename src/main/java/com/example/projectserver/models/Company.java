@@ -19,6 +19,14 @@ public class Company {
 
     @Getter
     @Setter
+    private String apiId;
+
+    @Getter
+    @Setter
+    private String url;
+
+    @Getter
+    @Setter
     private String name;
 
     @Getter
@@ -34,4 +42,10 @@ public class Company {
     @Getter
     @Setter
     private List<Employer> employers;
+
+    @OneToMany(mappedBy = "company",cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @Getter
+    @Setter
+    private List<Job> jobs;
 }

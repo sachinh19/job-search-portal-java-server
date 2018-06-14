@@ -3,7 +3,9 @@ package com.example.projectserver.services;
 import com.example.projectserver.models.Company;
 import com.example.projectserver.models.Job;
 import com.example.projectserver.models.JobType;
+import com.example.projectserver.repositories.CompanyRepository;
 import com.example.projectserver.repositories.JobRepository;
+import com.example.projectserver.repositories.JobTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +17,14 @@ import java.util.List;
 public class JobService {
 
     private JobRepository jobRepository;
+    private CompanyRepository companyRepository;
+    private JobTypeRepository jobTypeRepository;
 
     @Autowired
-    public JobService(JobRepository jobRepository) {
+    public JobService(JobRepository jobRepository, CompanyRepository companyRepository, JobTypeRepository jobTypeRepository) {
         this.jobRepository = jobRepository;
-
+        this.companyRepository = companyRepository;
+        this.jobTypeRepository = jobTypeRepository;
     }
 
     @GetMapping("api/job")
@@ -35,6 +40,20 @@ public class JobService {
 
     @PostMapping("api/job")
     public Job createJob(@RequestBody Job job) {
+
+        Company company = companyRepository.findCompanyByApiId(job.getCompany().getApiId()).orElse(null);
+        JobType jobType = jobTypeRepository.findJobTypeByName(job.getJobType().getName()).orElse(null);
+
+        if(company == null){
+            company = companyRepository.save(job.getCompany());
+        }
+
+        if(jobType == null){
+            jobType = jobTypeRepository.save(job.getJobType());
+        }
+
+        job.setCompany(company);
+        job.setJobType(jobType);
         return jobRepository.save(job);
     }
 

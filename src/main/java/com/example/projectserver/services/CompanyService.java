@@ -60,6 +60,8 @@ public class CompanyService {
             String name = newCompany.getName();
             String state = newCompany.getState();
             String country = newCompany.getCountry();
+            String apiId = newCompany.getApiId();
+            String url = newCompany.getUrl();
 
             if (name != null) {
                 existingCompany.setName(name);
@@ -70,7 +72,12 @@ public class CompanyService {
             if (state != null) {
                 existingCompany.setState(state);
             }
-
+            if (apiId != null) {
+                existingCompany.setApiId(apiId);
+            }
+            if (url != null) {
+                existingCompany.setUrl(url);
+            }
             return companyRepository.save(existingCompany);
         }
 
