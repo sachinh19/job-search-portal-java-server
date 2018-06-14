@@ -45,7 +45,8 @@ public class Job {
 
     @Getter
     @Setter
-    private boolean expired = false;
+    private String url;
+
 
     @ManyToOne
     @JsonIgnore
@@ -53,10 +54,10 @@ public class Job {
     @Setter
     private Company company;
 
-    @ManyToMany(mappedBy = "jobs")
+    @ManyToOne
     @Getter
     @Setter
-    private List<JobType> jobTypes;
+    private JobType jobType;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "person_job_table", joinColumns = @JoinColumn(name = "person_id"), inverseJoinColumns = @JoinColumn(name = "job_id"))

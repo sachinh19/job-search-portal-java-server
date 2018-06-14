@@ -1,9 +1,11 @@
 package com.example.projectserver.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.Entity;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Employer extends Person{
@@ -14,11 +16,13 @@ public class Employer extends Person{
 
     @Getter
     @Setter
-    private String currentCompany;
+    private String tenure;
 
+    @ManyToOne
+    @JsonIgnore
     @Getter
     @Setter
-    private String tenure;
+    private Company company;
 
 
 

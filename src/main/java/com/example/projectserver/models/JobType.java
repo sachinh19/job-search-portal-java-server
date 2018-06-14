@@ -29,8 +29,7 @@ public class JobType {
     @Setter
     private List<JobSeeker> jobSeekers;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "job_jobType_table", joinColumns = @JoinColumn(name = "job_id"), inverseJoinColumns = @JoinColumn(name = "jobType_id"))
+    @OneToMany(mappedBy = "jobType" ,cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     @Getter
     @Setter
