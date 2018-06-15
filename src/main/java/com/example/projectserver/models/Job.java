@@ -34,7 +34,7 @@ public class Job {
     @Setter
     private String country;
 
-    @Column(name = "description", length = 100000)
+    @Column(name = "description", length = 1000000)
     @Getter
     @Setter
     private String description;

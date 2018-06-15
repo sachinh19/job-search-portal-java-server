@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -23,9 +24,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+
 @RestController
 @CrossOrigin(origins = "*", maxAge = 3600)
 public class JobService {
+
+    private static final String API_URL = "https://authenticjobs.com/api/?api_key=fbf2b1502bc1ccf4aac2d014afb4ad28&method=aj.jobs.search&format=json&perpage=60";
 
     private JobRepository jobRepository;
     private CompanyRepository companyRepository;
@@ -184,7 +188,7 @@ public class JobService {
 
             if (newJob.has("post_date")) {
 
-                job.setPostedDate(new SimpleDateFormat("MM-dd-yyyy").parse(newJob.get("post_date").textValue().split(" ")[0]));
+                job.setPostedDate(new SimpleDateFormat("yyyy-MM-dd").parse(newJob.get("post_date").textValue().split(" ")[0]));
             }
 
             jobList.add(createJob(job, response));
@@ -195,31 +199,10 @@ public class JobService {
     }
 
 
-    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-        InputStream is = new URL(url).openStream();
-        try {
-            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-            String jsonText = readAll(rd);
-            JSONObject json = new JSONObject(jsonText);
-            return json;
-        } finally {
-            is.close();
-        }
-    }
-
-    public static String readAll(Reader rd) throws IOException {
-        StringBuilder sb = new StringBuilder();
-        int cp;
-        while ((cp = rd.read()) != -1) {
-            sb.append((char) cp);
-        }
-        return sb.toString();
-    }
-
     public static JsonNode getDatafromUrl() throws IOException {
-        JSONObject json = readJsonFromUrl("https://authenticjobs.com/api/?api_key=fbf2b1502bc1ccf4aac2d014afb4ad28&method=aj.jobs.search&format=json&perpage=60");
-        System.out.println(json.toString());
-        JsonNode jsonNode = new ObjectMapper().readTree(json.toString());
+        RestTemplate restTemplate = new RestTemplate();
+        String s = (String)restTemplate.getForObject(API_URL, String.class);
+        JsonNode jsonNode = new ObjectMapper().readTree(s);
         return jsonNode;
     }
 
