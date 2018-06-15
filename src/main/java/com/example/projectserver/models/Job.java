@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -19,6 +20,10 @@ public class Job {
 
     @Getter
     @Setter
+    private String apiId = "Not Available";
+
+    @Getter
+    @Setter
     private String position;
 
     @Getter
@@ -29,7 +34,7 @@ public class Job {
     @Setter
     private String country;
 
-    @Column(name = "description", length = 10000)
+    @Column(name = "description", length = 100000)
     @Getter
     @Setter
     private String description;
@@ -37,7 +42,7 @@ public class Job {
 
     @Getter
     @Setter
-    private String postedDate;
+    private Date postedDate;
 
     @Getter
     @Setter
@@ -47,14 +52,18 @@ public class Job {
     @Setter
     private String url;
 
+    @Getter
+    @Setter
+    private String keywords;
 
-    @ManyToOne
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JsonIgnore
     @Getter
     @Setter
     private Company company;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @Getter
     @Setter
     private JobType jobType;

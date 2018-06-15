@@ -19,7 +19,7 @@ public class Company {
 
     @Getter
     @Setter
-    private String apiId;
+    private String apiId = "Not Available";
 
     @Getter
     @Setter
@@ -32,10 +32,6 @@ public class Company {
     @Getter
     @Setter
     private String state;
-
-    @Getter
-    @Setter
-    private String country;
 
     @OneToMany(mappedBy = "company",cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore

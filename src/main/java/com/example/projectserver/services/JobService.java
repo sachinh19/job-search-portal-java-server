@@ -6,10 +6,21 @@ import com.example.projectserver.models.JobType;
 import com.example.projectserver.repositories.CompanyRepository;
 import com.example.projectserver.repositories.JobRepository;
 import com.example.projectserver.repositories.JobTypeRepository;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.*;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 @RestController
@@ -39,22 +50,29 @@ public class JobService {
     }
 
     @PostMapping("api/job")
-    public Job createJob(@RequestBody Job job) {
+    public Job createJob(@RequestBody Job job, HttpServletResponse response) {
 
-        Company company = companyRepository.findCompanyByApiId(job.getCompany().getApiId()).orElse(null);
-        JobType jobType = jobTypeRepository.findJobTypeByName(job.getJobType().getName()).orElse(null);
+        System.out.println(job.getApiId());
+        Job existingJob = jobRepository.findJobByApiId(job.getApiId()).orElse(null);
+        if(existingJob!=null){
+            return updateJob(existingJob.getId(),job, response);
+        }else{
 
-        if(company == null){
-            company = companyRepository.save(job.getCompany());
+            Company company = companyRepository.findCompanyByApiId(job.getCompany().getApiId()).orElse(null);
+            JobType jobType = jobTypeRepository.findJobTypeByName(job.getJobType().getName()).orElse(null);
+
+            if (!(company != null)) {
+                company = companyRepository.save(job.getCompany());
+            }
+
+            if (!(jobType != null)) {
+                jobType = jobTypeRepository.save(job.getJobType());
+            }
+
+            job.setCompany(company);
+            job.setJobType(jobType);
+            return jobRepository.save(job);
         }
-
-        if(jobType == null){
-            jobType = jobTypeRepository.save(job.getJobType());
-        }
-
-        job.setCompany(company);
-        job.setJobType(jobType);
-        return jobRepository.save(job);
     }
 
     @DeleteMapping("api/job/{jobId}")
@@ -103,16 +121,106 @@ public class JobService {
             if (url != null) {
                 existingJob.setUrl(url);
             }
-            if (jobType != null) {
-                existingJob.setJobType(jobType);
-            }
-            if (company != null) {
-                existingJob.setCompany(company);
-            }
+
             jobRepository.save(existingJob);
         }
         response.setStatus(204);
         return existingJob;
+    }
+
+    @GetMapping("api/getjobs")
+    public List<Job> getNewJobs(HttpServletResponse response) throws IOException, ParseException {
+        System.out.println("sdfsf");
+        JsonNode jsonNode = getDatafromUrl();
+
+        List<Job> jobList = new ArrayList<Job>();
+
+        Iterator<JsonNode> itr = jsonNode.get("listings").get("listing").elements();
+
+        while (itr.hasNext()) {
+
+            Job job = new Job();
+            Company company = new Company();
+            JobType jobType = new JobType();
+
+            JsonNode newJob = itr.next();
+
+            if (newJob.has("company")) {
+
+                company.setApiId(newJob.get("company").get("id").textValue());
+                company.setUrl(newJob.get("company").get("url").textValue());
+                company.setName(newJob.get("company").get("name").textValue());
+                if(newJob.get("company").has("location"))
+                    company.setState(newJob.get("company").get("location").get("name").textValue());
+            }
+
+            job.setCompany(company);
+
+            if (newJob.has("type")) {
+
+                jobType.setName(newJob.get("type").get("name").textValue());
+            }
+
+            job.setJobType(jobType);
+
+            if (newJob.has("title")) {
+
+                job.setPosition(newJob.get("title").textValue());
+            }
+            if (newJob.has("description")) {
+
+                job.setDescription(newJob.get("description").textValue());
+            }
+
+            if (newJob.has("id")) {
+
+                job.setApiId(newJob.get("id").textValue());
+            }
+
+            if (newJob.has("url")) {
+
+                job.setUrl(newJob.get("url").textValue());
+            }
+
+            if (newJob.has("post_date")) {
+
+                job.setPostedDate(new SimpleDateFormat("MM-dd-yyyy").parse(newJob.get("post_date").textValue().split(" ")[0]));
+            }
+
+            jobList.add(createJob(job, response));
+        }
+
+        return jobList;
+
+    }
+
+
+    public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+        InputStream is = new URL(url).openStream();
+        try {
+            BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+            String jsonText = readAll(rd);
+            JSONObject json = new JSONObject(jsonText);
+            return json;
+        } finally {
+            is.close();
+        }
+    }
+
+    public static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
+        }
+        return sb.toString();
+    }
+
+    public static JsonNode getDatafromUrl() throws IOException {
+        JSONObject json = readJsonFromUrl("https://authenticjobs.com/api/?api_key=fbf2b1502bc1ccf4aac2d014afb4ad28&method=aj.jobs.search&format=json&perpage=60");
+        System.out.println(json.toString());
+        JsonNode jsonNode = new ObjectMapper().readTree(json.toString());
+        return jsonNode;
     }
 
 }

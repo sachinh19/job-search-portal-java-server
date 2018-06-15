@@ -59,15 +59,11 @@ public class CompanyService {
 
             String name = newCompany.getName();
             String state = newCompany.getState();
-            String country = newCompany.getCountry();
             String apiId = newCompany.getApiId();
             String url = newCompany.getUrl();
 
             if (name != null) {
                 existingCompany.setName(name);
-            }
-            if (country != null) {
-                existingCompany.setCountry(country);
             }
             if (state != null) {
                 existingCompany.setState(state);
