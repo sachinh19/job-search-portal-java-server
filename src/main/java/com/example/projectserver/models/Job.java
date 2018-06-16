@@ -58,7 +58,6 @@ public class Job {
 
 
     @ManyToOne(cascade = CascadeType.PERSIST)
-    @JsonIgnore
     @Getter
     @Setter
     private Company company;
@@ -70,14 +69,12 @@ public class Job {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "person_job_table", joinColumns = @JoinColumn(name = "person_id"), inverseJoinColumns = @JoinColumn(name = "job_id"))
-    @JsonIgnore
     @Getter
     @Setter
     private List<Person> persons;
 
 
     @OneToMany(mappedBy = "job",cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonIgnore
     @Getter
     @Setter
     private List<Query> queries;
