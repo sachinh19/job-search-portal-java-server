@@ -186,6 +186,11 @@ public class JobService {
                 job.setUrl(newJob.get("url").textValue());
             }
 
+            if (newJob.has("keywords")) {
+
+                job.setKeywords(newJob.get("keywords").textValue());
+            }
+
             if (newJob.has("post_date")) {
 
                 job.setPostedDate(new SimpleDateFormat("yyyy-MM-dd").parse(newJob.get("post_date").textValue().split(" ")[0]));
