@@ -69,6 +69,7 @@ public class Job {
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(name = "person_job_table", joinColumns = @JoinColumn(name = "person_id"), inverseJoinColumns = @JoinColumn(name = "job_id"))
+    @JsonIgnore
     @Getter
     @Setter
     private List<Person> persons;
