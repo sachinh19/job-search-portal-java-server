@@ -134,7 +134,7 @@ public class JobService {
 
     @GetMapping("api/getjobs")
     public List<Job> getNewJobs(HttpServletResponse response) throws IOException, ParseException {
-        System.out.println("sdfsf");
+
         JsonNode jsonNode = getDatafromUrl();
 
         List<Job> jobList = new ArrayList<Job>();
