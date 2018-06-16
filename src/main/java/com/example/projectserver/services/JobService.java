@@ -20,9 +20,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 @RestController
@@ -49,8 +47,22 @@ public class JobService {
 
     @GetMapping("api/job/{jobId}")
     public Job findJobById(@PathVariable("jobId") int jobId) {
-
         return jobRepository.findById(jobId).orElse(null);
+    }
+
+    @GetMapping("api/searchJob/{searchText}")
+    public List<Job> searchJobsByKeyword(@PathVariable("searchText") String searchText) {
+
+        System.out.println("searchJobsByKeyword" + searchText);
+        List<Job> jobs = new ArrayList<Job>();
+        Set<Job> jobsSet = new HashSet<Job>();
+
+        String[] keywords = searchText.split("\\+\\+");
+        for(String s:keywords){
+            jobsSet.addAll(jobRepository.findJobsByKeyword(s));
+        }
+        jobs.addAll(jobsSet);
+        return jobs;
     }
 
     @PostMapping("api/job")

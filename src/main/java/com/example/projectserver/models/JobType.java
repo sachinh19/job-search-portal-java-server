@@ -10,7 +10,6 @@ import java.util.List;
 @Entity
 public class JobType {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "jobType_id")
