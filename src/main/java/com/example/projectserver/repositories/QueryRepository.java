@@ -1,7 +1,13 @@
 package com.example.projectserver.repositories;
 
-import com.example.projectserver.models.Query;
+import com.example.projectserver.models.Job;
+import com.example.projectserver.models.JobQuery;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 
-public interface QueryRepository extends JpaRepository<Query,Integer> {
+import java.util.List;
+
+public interface QueryRepository extends JpaRepository<JobQuery,Integer> {
+
 }

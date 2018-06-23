@@ -76,8 +76,9 @@ public class Job {
 
 
     @OneToMany(mappedBy = "job",cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
     @Getter
     @Setter
-    private List<Query> queries;
+    private List<JobQuery> queries;
 
 }

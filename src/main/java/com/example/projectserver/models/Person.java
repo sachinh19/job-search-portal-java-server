@@ -111,7 +111,7 @@ public class Person {
     @JsonIgnore
     @Getter
     @Setter
-    private List<Query> queries;
+    private List<JobQuery> queries;
 
 
     @OneToMany(mappedBy = "person",cascade = CascadeType.ALL, orphanRemoval = true)

@@ -10,7 +10,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity
-public class Query {
+public class JobQuery {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
