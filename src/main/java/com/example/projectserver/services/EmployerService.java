@@ -21,7 +21,7 @@ public class EmployerService {
     private CompanyRepository companyRepository;
 
     @Autowired
-    public EmployerService(EmployerRepository employerRepository,RoleRepository roleRepository, CompanyRepository companyRepository){
+    public EmployerService(EmployerRepository employerRepository, RoleRepository roleRepository, CompanyRepository companyRepository) {
         this.employerRepository = employerRepository;
         this.roleRepository = roleRepository;
         this.companyRepository = companyRepository;
@@ -48,22 +48,20 @@ public class EmployerService {
         String companyName = employer.getCompanyName();
         Company company = companyRepository.findCompanyByName(companyName).orElse(null);
 
-        if(role != null){
-
-            employer.setRole(role);
+        if (company == null) {
+            Company newCompany = new Company();
+            newCompany.setName(companyName);
+            company = companyRepository.save(newCompany);
         }
-
-        if(company != null){
-            employer.setCompany(company);
-        }
-
+        employer.setCompany(company);
+        employer.setRole(role);
         return employerRepository.save(employer);
     }
 
     @PutMapping("api/employer/{employerId}")
     public Employer updateEmployer(@PathVariable("employerId") int employerId,
-                             @RequestBody Employer newEmployer,
-                             HttpServletResponse response) {
+                                   @RequestBody Employer newEmployer,
+                                   HttpServletResponse response) {
 
         Employer existingEmployer = employerRepository.findById(employerId).orElse(null);
 
@@ -96,20 +94,20 @@ public class EmployerService {
                 existingEmployer.setEmail(email);
             }
 
-            if(position != null){
+            if (position != null) {
                 existingEmployer.setPosition(position);
             }
-            if(tenure != null){
+            if (tenure != null) {
                 existingEmployer.setTenure(tenure);
             }
-            if(company != null){
+            if (company != null) {
 
                 existingEmployer.setCompany(company);
             }
-            if(expDescription != null){
+            if (expDescription != null) {
                 existingEmployer.setExpDescription(expDescription);
             }
-            if(aboutMe != null){
+            if (aboutMe != null) {
                 existingEmployer.setAboutMe(aboutMe);
             }
 

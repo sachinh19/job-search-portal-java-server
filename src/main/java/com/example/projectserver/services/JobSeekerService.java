@@ -18,7 +18,7 @@ public class JobSeekerService {
     private RoleRepository roleRepository;
 
     @Autowired
-    JobSeekerService(JobSeekerRepository jobSeekerRepository,RoleRepository roleRepository) {
+    JobSeekerService(JobSeekerRepository jobSeekerRepository, RoleRepository roleRepository) {
         this.jobSeekerRepository = jobSeekerRepository;
         this.roleRepository = roleRepository;
     }
@@ -39,17 +39,14 @@ public class JobSeekerService {
 
         jobSeeker.setRoleType("JobSeeker");
         Role role = roleRepository.findRoleByName("JobSeeker").orElse(null);
-        if(role != null){
-
-            jobSeeker.setRole(role);
-        }
+        jobSeeker.setRole(role);
         return jobSeekerRepository.save(jobSeeker);
     }
 
     @PutMapping("api/jobseeker/{jobseekerId}")
     public JobSeeker updateJobSeeker(@PathVariable("jobseekerId") int jobseekerId,
-                             @RequestBody JobSeeker newJobSeeker,
-                             HttpServletResponse response) {
+                                     @RequestBody JobSeeker newJobSeeker,
+                                     HttpServletResponse response) {
 
         JobSeeker existingJobSeeker = jobSeekerRepository.findById(jobseekerId).orElse(null);
 
@@ -82,16 +79,16 @@ public class JobSeekerService {
                 existingJobSeeker.setEmail(email);
             }
 
-            if(interestedPosition != null){
+            if (interestedPosition != null) {
                 existingJobSeeker.setInterestedPosition(interestedPosition);
             }
-            if(totalExp != null){
+            if (totalExp != null) {
                 existingJobSeeker.setTotalExp(totalExp);
             }
-            if(expDescription != null){
+            if (expDescription != null) {
                 existingJobSeeker.setExpDescription(expDescription);
             }
-            if(aboutMe != null){
+            if (aboutMe != null) {
                 existingJobSeeker.setAboutMe(aboutMe);
             }
 
