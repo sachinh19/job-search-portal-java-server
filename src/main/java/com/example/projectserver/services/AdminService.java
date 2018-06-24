@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class AdminService {
 
     private AdminRepository adminRepository;
@@ -35,7 +35,7 @@ public class AdminService {
     }
 
     @PostMapping("api/register/admin")
-    public Admin createAdmin(@RequestBody Admin admin) {
+    public Admin createAdmin(@RequestBody Admin admin, HttpServletResponse response) {
 
         admin.setRoleType("Admin");
         Role role = roleRepository.findRoleByName("Admin").orElse(null);

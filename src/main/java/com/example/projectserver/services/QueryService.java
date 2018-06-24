@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class QueryService {
 
     private QueryRepository queryRepository;
@@ -37,6 +37,7 @@ public class QueryService {
     @GetMapping("api/job/{jobId}/query")
     public List<JobQuery> findAllQueriesForJob(@PathVariable("jobId") int jobId, HttpServletResponse response) {
         Job job = jobRepository.findById(jobId).orElse(null);
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         if (job != null) {
             return job.getQueries();
         } else {
@@ -65,7 +66,7 @@ public class QueryService {
     }
 
     @PutMapping("api/query/{queryId}")
-    public JobQuery updateQuery(@PathVariable("queryId") int queryId, @RequestBody JobQuery newJobQuery) {
+    public JobQuery updateQuery(@PathVariable("queryId") int queryId, @RequestBody JobQuery newJobQuery, HttpServletResponse response) {
 
         JobQuery existingJobQuery = queryRepository.findById(queryId).orElse(null);
 
@@ -88,7 +89,7 @@ public class QueryService {
             return queryRepository.save(existingJobQuery);
 
         }
-
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         return existingJobQuery;
     }
 }

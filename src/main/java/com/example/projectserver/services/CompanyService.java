@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class CompanyService {
 
     private static final String API_URL ="https://authenticjobs.com/api/?api_key=fbf2b1502bc1ccf4aac2d014afb4ad28&method=aj.jobs.getcompanies&format=json";
@@ -33,19 +33,21 @@ public class CompanyService {
     }
 
     @GetMapping("api/company")
-    public List<Company> findAllCompanies() {
-
+    public List<Company> findAllCompanies(HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         return companyRepository.findAll();
     }
 
     @GetMapping("api/company/{companyId}")
-    public Company findCompanyById(@PathVariable("companyId") int companyId) {
+    public Company findCompanyById(@PathVariable("companyId") int companyId, HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         return companyRepository.findById(companyId).orElse(null);
     }
 
     @GetMapping("api/company/{companyId}/employees")
     public List<Employer> findEmployeesOfCompany(@PathVariable("companyId") int companyId, HttpServletResponse response) {
         Company company = companyRepository.findById(companyId).orElse(null);
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         if (company != null) {
             return company.getEmployers();
         }
@@ -56,6 +58,7 @@ public class CompanyService {
     @GetMapping("api/company/{companyId}/jobs")
     public List<Job> findJobsOfCompany(@PathVariable("companyId") int companyId, HttpServletResponse response) {
         Company company = companyRepository.findById(companyId).orElse(null);
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         if (company != null) {
             return company.getJobs();
         }
@@ -78,14 +81,12 @@ public class CompanyService {
     }
 
     @DeleteMapping("api/company/{companyId}")
-    public void deleteCompanyById(@PathVariable("companyId") int companyId) {
-
+    public void deleteCompanyById(@PathVariable("companyId") int companyId, HttpServletResponse response) {
         Company existingCompany = companyRepository.findById(companyId).orElse(null);
-
         if (existingCompany != null) {
-
             companyRepository.delete(existingCompany);
         }
+        response.setHeader("Access-Control-Allow-Credentials", "true");
     }
 
 
@@ -123,7 +124,7 @@ public class CompanyService {
     }
 
     @GetMapping("api/getcompanies")
-    public List<Company> getNewCompany(HttpServletResponse response) throws IOException, ParseException {
+    public List<Company> getNewCompanies(HttpServletResponse response) throws IOException, ParseException {
         JsonNode jsonNode = getDatafromUrl();
 
         List<Company> companyList = new ArrayList<Company>();
@@ -157,7 +158,7 @@ public class CompanyService {
 
             companyList.add(createCompany(company,response));
         }
-
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         return companyList;
 
     }

@@ -11,7 +11,7 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class PersonService {
 
     private PersonRepository personRepository;
@@ -32,6 +32,7 @@ public class PersonService {
 
     @GetMapping("api/person/username/{username}")
     public Person findPersonByUsername(@PathVariable("username")String username,HttpServletResponse response) {
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         Person existingPerson = personRepository.findPersonByUsername(username).orElse(null);
         if(existingPerson!=null)
             return existingPerson;
@@ -40,7 +41,8 @@ public class PersonService {
     }
 
     @GetMapping("api/person")
-    public List<Person> findAllPersons()    {
+    public List<Person> findAllPersons(HttpServletResponse response)    {
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         return personRepository.findAll();
     }
 
@@ -55,23 +57,24 @@ public class PersonService {
             return existingPerson;
         }
 
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setStatus(204);
         return null;
     }
 
     @GetMapping("api/logout")
-    public void logout(HttpSession session) {
+    public void logout(HttpSession session, HttpServletResponse response) {
         session.invalidate();
+        response.setHeader("Access-Control-Allow-Credentials", "true");
     }
 
     @DeleteMapping("api/person/{personId}")
-    public void deletePerson(@PathVariable("personId") int personId){
+    public void deletePerson(@PathVariable("personId") int personId, HttpServletResponse response){
 
         Person existingPerson = personRepository.findById(personId).orElse(null);
-
         if(existingPerson != null){
-
             personRepository.delete(existingPerson);
         }
+        response.setHeader("Access-Control-Allow-Credentials", "true");
     }
 }

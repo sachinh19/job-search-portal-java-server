@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 public class EmployerService {
 
     private EmployerRepository employerRepository;
@@ -113,7 +113,7 @@ public class EmployerService {
 
             return employerRepository.save(existingEmployer);
         }
-
+        response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setStatus(204);
         return existingEmployer;
     }
