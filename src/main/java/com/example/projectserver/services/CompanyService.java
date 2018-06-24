@@ -20,7 +20,7 @@ import java.util.Iterator;
 import java.util.List;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, allowCredentials = "true")
 public class CompanyService {
 
     private static final String API_URL ="https://authenticjobs.com/api/?api_key=fbf2b1502bc1ccf4aac2d014afb4ad28&method=aj.jobs.getcompanies&format=json";
@@ -34,21 +34,18 @@ public class CompanyService {
 
     @GetMapping("api/company")
     public List<Company> findAllCompanies(HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        return companyRepository.findAll();
+                return companyRepository.findAll();
     }
 
     @GetMapping("api/company/{companyId}")
     public Company findCompanyById(@PathVariable("companyId") int companyId, HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        return companyRepository.findById(companyId).orElse(null);
+                return companyRepository.findById(companyId).orElse(null);
     }
 
     @GetMapping("api/company/{companyId}/employees")
     public List<Employer> findEmployeesOfCompany(@PathVariable("companyId") int companyId, HttpServletResponse response) {
         Company company = companyRepository.findById(companyId).orElse(null);
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        if (company != null) {
+                if (company != null) {
             return company.getEmployers();
         }
         response.setStatus(204);
@@ -58,8 +55,7 @@ public class CompanyService {
     @GetMapping("api/company/{companyId}/jobs")
     public List<Job> findJobsOfCompany(@PathVariable("companyId") int companyId, HttpServletResponse response) {
         Company company = companyRepository.findById(companyId).orElse(null);
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        if (company != null) {
+                if (company != null) {
             return company.getJobs();
         }
         response.setStatus(204);
@@ -86,8 +82,7 @@ public class CompanyService {
         if (existingCompany != null) {
             companyRepository.delete(existingCompany);
         }
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-    }
+            }
 
 
     @PutMapping("api/company/{companyId}")
@@ -158,8 +153,7 @@ public class CompanyService {
 
             companyList.add(createCompany(company,response));
         }
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        return companyList;
+                return companyList;
 
     }
 

@@ -24,7 +24,7 @@ import java.util.*;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, allowCredentials = "true")
 public class JobService {
 
     private static final String API_URL = "https://authenticjobs.com/api/?api_key=fbf2b1502bc1ccf4aac2d014afb4ad28&method=aj.jobs.search&format=json&perpage=60";
@@ -46,8 +46,7 @@ public class JobService {
 
     @GetMapping("api/job/{jobId}")
     public Job findJobById(@PathVariable("jobId") int jobId, HttpServletResponse response) {
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        return jobRepository.findById(jobId).orElse(null);
+                return jobRepository.findById(jobId).orElse(null);
     }
 
     @GetMapping("api/searchJob/{searchText}")
@@ -99,8 +98,7 @@ public class JobService {
         if (existingJob != null) {
             jobRepository.delete(existingJob);
         }
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-    }
+            }
 
     @PutMapping("api/job/{jobId}")
     public Job updateJob(@PathVariable("jobId") int jobId,
@@ -211,8 +209,7 @@ public class JobService {
 
             jobList.add(createJob(job, response));
         }
-        response.setHeader("Access-Control-Allow-Credentials", "true");
-        return jobList;
+                return jobList;
 
     }
 
