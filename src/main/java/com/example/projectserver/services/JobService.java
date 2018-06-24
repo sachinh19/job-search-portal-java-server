@@ -3,21 +3,20 @@ package com.example.projectserver.services;
 import com.example.projectserver.models.Company;
 import com.example.projectserver.models.Job;
 import com.example.projectserver.models.JobType;
+import com.example.projectserver.models.Person;
 import com.example.projectserver.repositories.CompanyRepository;
 import com.example.projectserver.repositories.JobRepository;
 import com.example.projectserver.repositories.JobTypeRepository;
+import com.example.projectserver.repositories.PersonRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.io.*;
-import java.net.URL;
-import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -31,12 +30,15 @@ public class JobService {
     private JobRepository jobRepository;
     private CompanyRepository companyRepository;
     private JobTypeRepository jobTypeRepository;
+    private PersonRepository personRepository;
 
     @Autowired
-    public JobService(JobRepository jobRepository, CompanyRepository companyRepository, JobTypeRepository jobTypeRepository) {
+    public JobService(JobRepository jobRepository, CompanyRepository companyRepository,
+                      JobTypeRepository jobTypeRepository, PersonRepository personRepository) {
         this.jobRepository = jobRepository;
         this.companyRepository = companyRepository;
         this.jobTypeRepository = jobTypeRepository;
+        this.personRepository = personRepository;
     }
 
     @GetMapping("api/job")
@@ -99,6 +101,27 @@ public class JobService {
             jobRepository.delete(existingJob);
         }
             }
+
+    @PutMapping("api/job/{jobId}/addapplicant")
+    public Job addApplicant(@PathVariable("jobId") int jobId, HttpServletResponse response,
+                            HttpSession session) {
+        Job existingJob = jobRepository.findById(jobId).orElse(null);
+        if (existingJob != null) {
+            Person person = (Person) session.getAttribute("currentUser");
+            List<Person> applicants = existingJob.getPersons();
+            int totalApplicants = existingJob.getTotalApplications();
+            if (person != null) {
+                applicants.add(person);
+                existingJob.setPersons(applicants);
+                totalApplicants = totalApplicants + 1;
+                existingJob.setTotalApplications(totalApplicants);
+                return jobRepository.save(existingJob);
+            }
+        }
+
+        response.setStatus(204);
+        return null;
+    }
 
     @PutMapping("api/job/{jobId}")
     public Job updateJob(@PathVariable("jobId") int jobId,

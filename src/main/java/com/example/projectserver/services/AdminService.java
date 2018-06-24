@@ -45,7 +45,7 @@ public class AdminService {
 
 
     @PostMapping("api/register/admin")
-    public Admin createAdmin(@RequestBody Admin admin, HttpServletResponse response) {
+    public Admin createAdmin(@RequestBody Admin admin,HttpServletRequest request) {
 
         admin.setRoleType("Admin");
         Role role = roleRepository.findRoleByName("Admin").orElse(null);
@@ -53,7 +53,11 @@ public class AdminService {
 
             admin.setRole(role);
         }
-        return adminRepository.save(admin);
+        Admin user = adminRepository.save(admin);
+        HttpSession session = request.getSession(true);
+        session.setAttribute("currentUser", user);
+        return user;
+
     }
 
     @PutMapping("api/admin")

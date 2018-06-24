@@ -43,11 +43,14 @@ public class JobSeekerService {
     }
 
     @PostMapping("api/register/jobseeker")
-    public JobSeeker createJobSeeker(@RequestBody JobSeeker jobSeeker) {
+    public JobSeeker createJobSeeker(@RequestBody JobSeeker jobSeeker,HttpServletRequest request) {
         jobSeeker.setRoleType("JobSeeker");
         Role role = roleRepository.findRoleByName("JobSeeker").orElse(null);
         jobSeeker.setRole(role);
-        return jobSeekerRepository.save(jobSeeker);
+        JobSeeker user = jobSeekerRepository.save(jobSeeker);
+        HttpSession session = request.getSession(true);
+        session.setAttribute("currentUser", user);
+        return user;
     }
 
     @PutMapping("api/jobseeker")

@@ -50,7 +50,7 @@ public class EmployerService {
     }
 
     @PostMapping("api/register/employer")
-    public Employer createEmployer(@RequestBody Employer employer) {
+    public Employer createEmployer(@RequestBody Employer employer,HttpServletRequest request) {
 
         employer.setRoleType("Employer");
         Role role = roleRepository.findRoleByName("Employer").orElse(null);
@@ -65,7 +65,10 @@ public class EmployerService {
         }
         employer.setCompany(company);
         employer.setRole(role);
-        return employerRepository.save(employer);
+        Employer user = employerRepository.save(employer);
+        HttpSession session = request.getSession(true);
+        session.setAttribute("currentUser", user);
+        return user;
     }
 
     @PutMapping("api/employer")
