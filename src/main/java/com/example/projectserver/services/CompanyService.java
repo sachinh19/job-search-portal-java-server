@@ -1,6 +1,7 @@
 package com.example.projectserver.services;
 
 import com.example.projectserver.models.Company;
+import com.example.projectserver.models.Employer;
 import com.example.projectserver.models.Job;
 import com.example.projectserver.models.JobType;
 import com.example.projectserver.repositories.CompanyRepository;
@@ -40,6 +41,26 @@ public class CompanyService {
     @GetMapping("api/company/{companyId}")
     public Company findCompanyById(@PathVariable("companyId") int companyId) {
         return companyRepository.findById(companyId).orElse(null);
+    }
+
+    @GetMapping("api/company/{companyId}/employees")
+    public List<Employer> findEmployeesOfCompany(@PathVariable("companyId") int companyId, HttpServletResponse response) {
+        Company company = companyRepository.findById(companyId).orElse(null);
+        if (company != null) {
+            return company.getEmployers();
+        }
+        response.setStatus(204);
+        return null;
+    }
+
+    @GetMapping("api/company/{companyId}/jobs")
+    public List<Job> findJobsOfCompany(@PathVariable("companyId") int companyId, HttpServletResponse response) {
+        Company company = companyRepository.findById(companyId).orElse(null);
+        if (company != null) {
+            return company.getJobs();
+        }
+        response.setStatus(204);
+        return null;
     }
 
     @PostMapping("api/company")
