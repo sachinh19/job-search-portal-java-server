@@ -44,7 +44,7 @@ public class ModeratorService {
 
 
     @PostMapping("api/register/moderator")
-    public Moderator createModerator(@RequestBody Moderator moderator,HttpServletRequest request) {
+    public Moderator createModerator(@RequestBody Moderator moderator) {
 
         moderator.setRoleType("Moderator");
         Role role = roleRepository.findRoleByName("Moderator").orElse(null);
@@ -53,8 +53,6 @@ public class ModeratorService {
             moderator.setRole(role);
         }
         Moderator user = moderatorRepository.save(moderator);
-        HttpSession session = request.getSession(true);
-        session.setAttribute("currentUser", user);
         return user;
     }
 

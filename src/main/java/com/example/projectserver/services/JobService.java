@@ -123,6 +123,23 @@ public class JobService {
         return null;
     }
 
+
+    @GetMapping("api/job/{jobId}/status")
+    public void getApplicationStatus(@PathVariable("jobId") int jobId, HttpServletResponse response, HttpSession session) {
+        Job existingJob = jobRepository.findById(jobId).orElse(null);
+        if (existingJob != null) {
+            Person person = (Person) session.getAttribute("currentUser");
+            List<Person> applicants = existingJob.getPersons();
+            if (person != null) {
+               if (applicants.contains(person)) {
+                   response.setStatus(200);
+               }
+            }
+        }
+
+        response.setStatus(204);
+    }
+
     @PutMapping("api/job/{jobId}")
     public Job updateJob(@PathVariable("jobId") int jobId,
                          @RequestBody Job newJob,
