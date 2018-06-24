@@ -7,7 +7,10 @@ import com.example.projectserver.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -34,6 +37,13 @@ public class AdminService {
         return adminRepository.findById(adminId).orElse(null);
     }
 
+    @GetMapping("api/admin/username/{username}")
+    public Admin findAdminByUsername(@PathVariable("username") String username) {
+        return adminRepository.findAdminByUsername(username).orElse(null);
+    }
+
+
+
     @PostMapping("api/register/admin")
     public Admin createAdmin(@RequestBody Admin admin, HttpServletResponse response) {
 
@@ -46,11 +56,13 @@ public class AdminService {
         return adminRepository.save(admin);
     }
 
-    @PutMapping("api/admin/{adminId}")
-    public Admin updateAdmin(@PathVariable("adminId") int adminId,
-                             @RequestBody Admin newAdmin,
+    @PutMapping("api/admin")
+    public Admin updateAdmin(@RequestBody Admin newAdmin,
+                             HttpServletRequest request,
                              HttpServletResponse response) {
-
+        HttpSession session = request.getSession(false);
+        Admin admin = (Admin) session.getAttribute("currentUser");
+        int adminId = admin.getId();
         Admin existingAdmin = adminRepository.findById(adminId).orElse(null);
 
         if (existingAdmin != null) {
@@ -84,7 +96,7 @@ public class AdminService {
             if(aboutMe != null){
                 existingAdmin.setAboutMe(aboutMe);
             }
-
+            existingAdmin.setUpdated(new Date());
             return adminRepository.save(existingAdmin);
         }
 

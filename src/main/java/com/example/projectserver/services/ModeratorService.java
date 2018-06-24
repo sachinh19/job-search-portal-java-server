@@ -7,7 +7,10 @@ import com.example.projectserver.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -34,6 +37,12 @@ public class ModeratorService {
         return moderatorRepository.findById(moderatorid).orElse(null);
     }
 
+    @GetMapping("api/moderator/username/{username}")
+    public Moderator findJobSeekerByUsername(@PathVariable("username") String username) {
+        return moderatorRepository.findModeratorByUsername(username).orElse(null);
+    }
+
+
     @PostMapping("api/register/moderator")
     public Moderator createModerator(@RequestBody Moderator moderator) {
 
@@ -46,12 +55,14 @@ public class ModeratorService {
         return moderatorRepository.save(moderator);
     }
 
-    @PutMapping("api/moderator/{moderatorid}")
-    public Moderator updateModerator(@PathVariable("moderatorid") int moderatorid,
-                             @RequestBody Moderator newModerator,
+    @PutMapping("api/moderator")
+    public Moderator updateModerator(@RequestBody Moderator newModerator,
+                             HttpServletRequest request,
                              HttpServletResponse response) {
-
-        Moderator existingModerator = moderatorRepository.findById(moderatorid).orElse(null);
+        HttpSession session = request.getSession(false);
+        Moderator moderator = (Moderator)session.getAttribute("currentUser");
+        int moderatorId = moderator.getId();
+        Moderator existingModerator = moderatorRepository.findById(moderatorId).orElse(null);
 
         if (existingModerator != null) {
             String username = newModerator.getUsername();
@@ -84,7 +95,7 @@ public class ModeratorService {
             if(aboutMe != null){
                 existingModerator.setAboutMe(aboutMe);
             }
-
+            existingModerator.setUpdated(new Date());
             return moderatorRepository.save(existingModerator);
         }
 

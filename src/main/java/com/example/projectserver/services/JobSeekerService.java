@@ -4,10 +4,13 @@ import com.example.projectserver.models.JobSeeker;
 import com.example.projectserver.models.Role;
 import com.example.projectserver.repositories.JobSeekerRepository;
 import com.example.projectserver.repositories.RoleRepository;
+import org.apache.catalina.servlet4preview.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -34,21 +37,28 @@ public class JobSeekerService {
         return jobSeekerRepository.findById(jobseekerId).orElse(null);
     }
 
+    @GetMapping("api/jobseeker/username/{username}")
+    public JobSeeker findJobSeekerByUsername(@PathVariable("username") String username) {
+        return jobSeekerRepository.findJobSeekerByUsername(username).orElse(null);
+    }
+
     @PostMapping("api/register/jobseeker")
     public JobSeeker createJobSeeker(@RequestBody JobSeeker jobSeeker) {
-
         jobSeeker.setRoleType("JobSeeker");
         Role role = roleRepository.findRoleByName("JobSeeker").orElse(null);
         jobSeeker.setRole(role);
         return jobSeekerRepository.save(jobSeeker);
     }
 
-    @PutMapping("api/jobseeker/{jobseekerId}")
-    public JobSeeker updateJobSeeker(@PathVariable("jobseekerId") int jobseekerId,
-                                     @RequestBody JobSeeker newJobSeeker,
+    @PutMapping("api/jobseeker")
+    public JobSeeker updateJobSeeker(@RequestBody JobSeeker newJobSeeker,
+                                     HttpServletRequest request,
                                      HttpServletResponse response) {
 
-        JobSeeker existingJobSeeker = jobSeekerRepository.findById(jobseekerId).orElse(null);
+        HttpSession session = request.getSession(false);
+        JobSeeker jobSeeker = (JobSeeker) session.getAttribute("currentUser");
+        int jobSeekerId = jobSeeker.getId();
+        JobSeeker existingJobSeeker = jobSeekerRepository.findById(jobSeekerId).orElse(null);
 
         if (existingJobSeeker != null) {
             String username = newJobSeeker.getUsername();
@@ -91,7 +101,7 @@ public class JobSeekerService {
             if (aboutMe != null) {
                 existingJobSeeker.setAboutMe(aboutMe);
             }
-
+            existingJobSeeker.setUpdated(new Date());
             return jobSeekerRepository.save(existingJobSeeker);
         }
 

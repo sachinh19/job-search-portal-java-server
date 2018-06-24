@@ -2,14 +2,19 @@ package com.example.projectserver.services;
 
 import com.example.projectserver.models.Company;
 import com.example.projectserver.models.Employer;
+import com.example.projectserver.models.Person;
 import com.example.projectserver.models.Role;
 import com.example.projectserver.repositories.CompanyRepository;
 import com.example.projectserver.repositories.EmployerRepository;
 import com.example.projectserver.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -39,6 +44,11 @@ public class EmployerService {
         return employerRepository.findById(employerId).orElse(null);
     }
 
+    @GetMapping("api/employer/username/{username}")
+    public Employer findEmployerByUsername(@PathVariable("username") String username) {
+        return employerRepository.findEmployerByUsername(username).orElse(null);
+    }
+
     @PostMapping("api/register/employer")
     public Employer createEmployer(@RequestBody Employer employer) {
 
@@ -58,11 +68,13 @@ public class EmployerService {
         return employerRepository.save(employer);
     }
 
-    @PutMapping("api/employer/{employerId}")
-    public Employer updateEmployer(@PathVariable("employerId") int employerId,
-                                   @RequestBody Employer newEmployer,
+    @PutMapping("api/employer")
+    public Employer updateEmployer(@RequestBody Employer newEmployer,
+                                   HttpServletRequest request,
                                    HttpServletResponse response) {
-
+        HttpSession session = request.getSession(false);
+        Employer employer = (Employer) session.getAttribute("currentUser");
+        int employerId = employer.getId();
         Employer existingEmployer = employerRepository.findById(employerId).orElse(null);
 
         if (existingEmployer != null) {
@@ -73,7 +85,8 @@ public class EmployerService {
             String email = newEmployer.getEmail();
             String position = newEmployer.getPosition();
             String tenure = newEmployer.getTenure();
-            Company company = newEmployer.getCompany();
+            String companyName = newEmployer.getCompanyName();
+            Company company = companyRepository.findCompanyByName(companyName).orElse(null);
             String expDescription = newEmployer.getExpDescription();
             String aboutMe = newEmployer.getAboutMe();
 
@@ -110,7 +123,7 @@ public class EmployerService {
             if (aboutMe != null) {
                 existingEmployer.setAboutMe(aboutMe);
             }
-
+            existingEmployer.setUpdated(new Date());
             return employerRepository.save(existingEmployer);
         }
                 response.setStatus(204);
