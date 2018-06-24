@@ -9,7 +9,7 @@ import javax.persistence.ManyToMany;
 import java.util.List;
 
 @Entity
-public class JobSeeker extends Person{
+public class JobSeeker extends Person   {
 
     @Getter
     @Setter
@@ -24,8 +24,4 @@ public class JobSeeker extends Person{
     @Getter
     @Setter
     private List<JobType> jobTypes;
-
-
-
-
 }

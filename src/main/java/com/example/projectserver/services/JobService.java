@@ -28,7 +28,6 @@ import java.util.*;
 public class JobService {
 
     private static final String API_URL = "https://authenticjobs.com/api/?api_key=fbf2b1502bc1ccf4aac2d014afb4ad28&method=aj.jobs.search&format=json&perpage=60";
-
     private JobRepository jobRepository;
     private CompanyRepository companyRepository;
     private JobTypeRepository jobTypeRepository;

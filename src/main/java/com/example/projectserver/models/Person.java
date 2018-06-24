@@ -18,7 +18,6 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.JOINED)
 public class Person {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "person_id")
@@ -26,7 +25,6 @@ public class Person {
     @Setter
     private int id;
 
-    @Column(unique = true)
     @Getter
     @Setter
     @NotEmpty(message = "Please provide your username")
