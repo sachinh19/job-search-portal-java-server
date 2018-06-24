@@ -22,14 +22,25 @@ public class PersonService {
     }
 
     @GetMapping("api/person/{personId}")
-    public Person findPersonById(@PathVariable("personId")int personId){
+    public Person findPersonById(@PathVariable("personId")int personId,HttpServletResponse response) {
+        Person person = personRepository.findById(personId).orElse(null);
+        if(person!=null)
+            return person;
+        response.setStatus(204);
+        return null;
+    }
 
-        return personRepository.findById(personId).orElse(null);
+    @GetMapping("api/person/username/{username}")
+    public Person findPersonByUsername(@PathVariable("username")String username,HttpServletResponse response) {
+        Person existingPerson = personRepository.findPersonByUsername(username).orElse(null);
+        if(existingPerson!=null)
+            return existingPerson;
+        response.setStatus(204);
+        return null;
     }
 
     @GetMapping("api/person")
-    public List<Person> findAllPersons(){
-
+    public List<Person> findAllPersons()    {
         return personRepository.findAll();
     }
 
