@@ -52,7 +52,8 @@ public class ModeratorService {
 
             moderator.setRole(role);
         }
-        return moderatorRepository.save(moderator);
+        Moderator user = moderatorRepository.save(moderator);
+        return user;
     }
 
     @PutMapping("api/moderator")

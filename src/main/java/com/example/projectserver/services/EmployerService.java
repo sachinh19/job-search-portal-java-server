@@ -65,7 +65,8 @@ public class EmployerService {
         }
         employer.setCompany(company);
         employer.setRole(role);
-        return employerRepository.save(employer);
+        Employer user = employerRepository.save(employer);
+        return user;
     }
 
     @PutMapping("api/employer")

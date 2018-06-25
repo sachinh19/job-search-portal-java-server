@@ -47,7 +47,8 @@ public class JobSeekerService {
         jobSeeker.setRoleType("JobSeeker");
         Role role = roleRepository.findRoleByName("JobSeeker").orElse(null);
         jobSeeker.setRole(role);
-        return jobSeekerRepository.save(jobSeeker);
+        JobSeeker user = jobSeekerRepository.save(jobSeeker);
+        return user;
     }
 
     @PutMapping("api/jobseeker")
