@@ -17,4 +17,7 @@ public interface JobRepository extends JpaRepository<Job, Integer> {
 
     @Query("select  j from Job j where j.keywords LIKE %:keyword%")
     Set<Job> findJobsByKeyword (@Param("keyword") String keyword);
+
+    @Query("select  j from Job j where j.company=:company")
+    List<Job> findJobsByCompany (@Param("company") Company company);
 }

@@ -1,6 +1,8 @@
 package com.example.projectserver.services;
 
-import com.example.projectserver.models.Person;
+import com.example.projectserver.models.*;
+import com.example.projectserver.repositories.CompanyRepository;
+import com.example.projectserver.repositories.JobRepository;
 import com.example.projectserver.repositories.PersonRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -15,10 +17,17 @@ import java.util.List;
 public class PersonService {
 
     private PersonRepository personRepository;
+    private CompanyRepository companyRepository;
+    private JobRepository jobRepository;
+
 
     @Autowired
-    public PersonService(PersonRepository personRepository){
+    public PersonService(PersonRepository personRepository,
+                         CompanyRepository companyRepository,
+                         JobRepository jobRepository){
         this.personRepository = personRepository;
+        this.companyRepository = companyRepository;
+        this.jobRepository = jobRepository;
     }
 
     @GetMapping("api/person/{personId}")
@@ -41,7 +50,35 @@ public class PersonService {
 
     @GetMapping("api/person")
     public List<Person> findAllPersons(HttpServletResponse response)    {
-                return personRepository.findAll();
+        return personRepository.findAll();
+    }
+
+    @GetMapping("api/person/job")
+    public List<Job> findAllJobsForPerson(HttpServletRequest request, HttpServletResponse response)    {
+        HttpSession session = request.getSession(false);
+        Person existingPerson = (Person) session.getAttribute("currentUser");
+        int personId = existingPerson.getId();
+        Person person = personRepository.findById(personId).orElse(null);
+        List<Job> jobs = person.getJobs();
+        return jobs;
+    }
+
+    @GetMapping("api/person/company/job")
+    public List<Job> findJobsForPersonByCompany(HttpServletRequest request, HttpServletResponse response)    {
+        HttpSession session = request.getSession(false);
+        Company company = companyRepository.findCompanyByName("defaultCompany").orElse(null);
+        List<Job> jobs = jobRepository.findJobsByCompany(company);
+        return jobs;
+    }
+
+
+    @GetMapping("api/person/query")
+    public List<JobQuery> findAllQueriesForPerson(HttpServletRequest request, HttpServletResponse response)    {
+        HttpSession session = request.getSession(false);
+        Person existingPerson = (Person) session.getAttribute("currentUser");
+        int personId = existingPerson.getId();
+        Person person = personRepository.findById(personId).orElse(null);
+        return person.getQueries();
     }
 
     @PostMapping("api/login")
@@ -61,7 +98,7 @@ public class PersonService {
     @GetMapping("api/logout")
     public void logout(HttpSession session, HttpServletResponse response) {
         session.invalidate();
-            }
+    }
 
     @DeleteMapping("api/person/{personId}")
     public void deletePerson(@PathVariable("personId") int personId, HttpServletResponse response){
@@ -70,5 +107,5 @@ public class PersonService {
         if(existingPerson != null){
             personRepository.delete(existingPerson);
         }
-            }
+    }
 }

@@ -1,9 +1,6 @@
 package com.example.projectserver.services;
 
-import com.example.projectserver.models.Company;
-import com.example.projectserver.models.Job;
-import com.example.projectserver.models.JobType;
-import com.example.projectserver.models.Person;
+import com.example.projectserver.models.*;
 import com.example.projectserver.repositories.CompanyRepository;
 import com.example.projectserver.repositories.JobRepository;
 import com.example.projectserver.repositories.JobTypeRepository;
@@ -14,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.*;
@@ -51,6 +49,7 @@ public class JobService {
                 return jobRepository.findById(jobId).orElse(null);
     }
 
+
     @GetMapping("api/searchJob/{searchText}")
     public List<Job> searchJobsByKeyword(@PathVariable("searchText") String searchText) {
 
@@ -68,7 +67,18 @@ public class JobService {
 
     @PostMapping("api/job/userdefined")
     public Job createUserDefinedJob(@RequestBody Job job, HttpServletResponse response) {
-            return jobRepository.save(job);
+        Optional<Company> result = companyRepository.findCompanyByName(job.getCompany().getName());
+        if(result.isPresent()) {
+            Company company = result.get();
+            job.setCompany(company);
+        }
+        Optional<JobType> result1 = jobTypeRepository.findJobTypeByName(job.getJobType().getName());
+        if(result1.isPresent()) {
+            JobType jobType = result1.get();
+            job.setJobType(jobType);
+        }
+
+        return jobRepository.save(job);
     }
 
 

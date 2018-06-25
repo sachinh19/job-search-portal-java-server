@@ -1,11 +1,9 @@
 package com.example.projectserver.services;
 
-import com.example.projectserver.models.Company;
-import com.example.projectserver.models.Employer;
-import com.example.projectserver.models.Person;
-import com.example.projectserver.models.Role;
+import com.example.projectserver.models.*;
 import com.example.projectserver.repositories.CompanyRepository;
 import com.example.projectserver.repositories.EmployerRepository;
+import com.example.projectserver.repositories.JobRepository;
 import com.example.projectserver.repositories.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
@@ -24,12 +22,14 @@ public class EmployerService {
     private EmployerRepository employerRepository;
     private RoleRepository roleRepository;
     private CompanyRepository companyRepository;
+    private JobRepository jobRepository;
 
     @Autowired
-    public EmployerService(EmployerRepository employerRepository, RoleRepository roleRepository, CompanyRepository companyRepository) {
+    public EmployerService(JobRepository jobRepository, EmployerRepository employerRepository, RoleRepository roleRepository, CompanyRepository companyRepository) {
         this.employerRepository = employerRepository;
         this.roleRepository = roleRepository;
         this.companyRepository = companyRepository;
+        this.jobRepository = jobRepository;
     }
 
 
@@ -42,6 +42,16 @@ public class EmployerService {
     public Employer findEmployerById(@PathVariable("employerId") int employerId) {
 
         return employerRepository.findById(employerId).orElse(null);
+    }
+
+    @GetMapping("api/employer/job")
+    public List<Job> findJobsForEmployer(HttpServletRequest request, HttpServletResponse response)    {
+        HttpSession session = request.getSession(false);
+        Employer existingEmployer = (Employer) session.getAttribute("currentUser");
+        String companyName = existingEmployer.getCompanyName();
+        Company company = companyRepository.findCompanyByName(companyName).orElse(null);
+        List<Job> jobs = jobRepository.findJobsByCompany(company);
+        return jobs;
     }
 
     @GetMapping("api/employer/username/{username}")
