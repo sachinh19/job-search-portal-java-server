@@ -66,10 +66,14 @@ public class JobService {
         return jobs;
     }
 
-    @PostMapping("api/job")
-        public Job createJob(@RequestBody Job job, HttpServletResponse response) {
+    @PostMapping("api/job/userdefined")
+    public Job createUserDefinedJob(@RequestBody Job job) {
+            return jobRepository.save(job);
+    }
 
-        System.out.println(job.getApiId());
+
+    @PostMapping("api/job")
+    public Job createJob(@RequestBody Job job, HttpServletResponse response) {
         Job existingJob = jobRepository.findJobByApiId(job.getApiId()).orElse(null);
         if(existingJob!=null){
             return updateJob(existingJob.getId(),job, response);
@@ -108,10 +112,11 @@ public class JobService {
         Job existingJob = jobRepository.findById(jobId).orElse(null);
         if (existingJob != null) {
             Person person = (Person) session.getAttribute("currentUser");
+            Person existingperson = personRepository.findById(person.getId()).orElse(null);
             List<Person> applicants = existingJob.getPersons();
             int totalApplicants = existingJob.getTotalApplications();
-            if (person != null) {
-                applicants.add(person);
+            if (existingperson != null && !applicants.contains(existingperson)) {
+                applicants.add(existingperson);
                 existingJob.setPersons(applicants);
                 totalApplicants = totalApplicants + 1;
                 existingJob.setTotalApplications(totalApplicants);
@@ -129,15 +134,22 @@ public class JobService {
         Job existingJob = jobRepository.findById(jobId).orElse(null);
         if (existingJob != null) {
             Person person = (Person) session.getAttribute("currentUser");
+            Person existingperson = personRepository.findById(person.getId()).orElse(null);
             List<Person> applicants = existingJob.getPersons();
-            if (person != null) {
-               if (applicants.contains(person)) {
+            if (existingperson != null) {
+               if (applicants.contains(existingperson)) {
                    response.setStatus(200);
+               } else {
+                   response.setStatus(204);
                }
+            } else {
+                response.setStatus(204);
             }
+        } else {
+            response.setStatus(204);
         }
 
-        response.setStatus(204);
+
     }
 
     @PutMapping("api/job/{jobId}")

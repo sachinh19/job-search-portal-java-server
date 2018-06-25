@@ -22,7 +22,7 @@ public class JobType {
     private String name;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    @JoinTable(name = "jobSeekers_jobType_table", joinColumns = @JoinColumn(name = "person_id"), inverseJoinColumns = @JoinColumn(name = "jobType_id"))
+    @JoinTable(name = "jobSeekers_jobType_table", joinColumns = @JoinColumn(name = "jobType_id"), inverseJoinColumns = @JoinColumn(name = "person_id"))
     @JsonIgnore
     @Getter
     @Setter
