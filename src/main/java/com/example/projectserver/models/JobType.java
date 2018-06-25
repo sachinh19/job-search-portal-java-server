@@ -34,7 +34,4 @@ public class JobType {
     @Setter
     private List<Job> jobs;
 
-
-
-
 }
