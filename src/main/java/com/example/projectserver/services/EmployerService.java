@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, allowCredentials = "true")
@@ -44,14 +45,19 @@ public class EmployerService {
         return employerRepository.findById(employerId).orElse(null);
     }
 
-    @GetMapping("api/employer/job")
-    public List<Job> findJobsForEmployer(HttpServletRequest request, HttpServletResponse response)    {
-        HttpSession session = request.getSession(false);
-        Employer existingEmployer = (Employer) session.getAttribute("currentUser");
-        String companyName = existingEmployer.getCompanyName();
-        Company company = companyRepository.findCompanyByName(companyName).orElse(null);
-        List<Job> jobs = jobRepository.findJobsByCompany(company);
-        return jobs;
+    @GetMapping("api/employer/job/{username}")
+    public List<Job> findJobsForEmployer(@PathVariable("username") String username, HttpServletResponse response)    {
+        Optional<Employer> result = employerRepository.findEmployerByUsername(username);
+        if(result.isPresent()){
+            Employer existingEmployer = result.get();
+            String companyName = existingEmployer.getCompanyName();
+            Company company = companyRepository.findCompanyByName(companyName).orElse(null);
+            List<Job> jobs = jobRepository.findJobsByCompany(company);
+            response.setStatus(200);
+            return jobs;
+        }
+        response.setStatus(204);
+        return null;
     }
 
     @GetMapping("api/employer/username/{username}")
