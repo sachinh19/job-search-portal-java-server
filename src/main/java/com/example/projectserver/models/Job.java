@@ -39,7 +39,6 @@ public class Job {
     @Setter
     private String description;
 
-
     @Getter
     @Setter
     private Date postedDate;

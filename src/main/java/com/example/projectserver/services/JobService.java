@@ -67,7 +67,7 @@ public class JobService {
     }
 
     @PostMapping("api/job/userdefined")
-    public Job createUserDefinedJob(@RequestBody Job job) {
+    public Job createUserDefinedJob(@RequestBody Job job, HttpServletResponse response) {
             return jobRepository.save(job);
     }
 
@@ -148,8 +148,6 @@ public class JobService {
         } else {
             response.setStatus(204);
         }
-
-
     }
 
     @PutMapping("api/job/{jobId}")
@@ -166,12 +164,16 @@ public class JobService {
             String country = newJob.getCountry();
             String description = newJob.getDescription();
             String url = newJob.getUrl();
+            String keywords = newJob.getKeywords();
             int totalApplications = newJob.getTotalApplications();
             JobType jobType = newJob.getJobType();
             Company company = newJob.getCompany();
 
             if (position != null) {
                 existingJob.setPosition(position);
+            }
+            if(keywords!=null) {
+                existingJob.setKeywords(keywords);
             }
             if (city != null) {
                 existingJob.setCity(city);
@@ -190,8 +192,10 @@ public class JobService {
             }
 
             jobRepository.save(existingJob);
+            response.setStatus(200);
         }
-        response.setStatus(204);
+        else
+            response.setStatus(204);
         return existingJob;
     }
 
