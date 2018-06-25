@@ -3,12 +3,15 @@ package com.example.projectserver.services;
 
 import com.example.projectserver.models.Job;
 import com.example.projectserver.models.JobQuery;
+import com.example.projectserver.models.Person;
 import com.example.projectserver.repositories.JobRepository;
+import com.example.projectserver.repositories.PersonRepository;
 import com.example.projectserver.repositories.QueryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
@@ -17,11 +20,13 @@ public class QueryService {
 
     private QueryRepository queryRepository;
     private JobRepository jobRepository;
+    private PersonRepository personRepository;
 
     @Autowired
-    QueryService(QueryRepository queryRepository, JobRepository jobRepository) {
+    QueryService(QueryRepository queryRepository, JobRepository jobRepository, PersonRepository personRepository) {
         this.queryRepository = queryRepository;
         this.jobRepository = jobRepository;
+        this.personRepository = personRepository;
     }
 
     @GetMapping("api/query")
@@ -56,12 +61,27 @@ public class QueryService {
     }
 
     @PostMapping("api/job/{jobId}/query")
-    public JobQuery createQuery(@PathVariable("jobId") int jobId, @RequestBody JobQuery newJobQuery) {
+    public JobQuery createQuery(@PathVariable("jobId") int jobId,
+                                @RequestBody JobQuery newJobQuery,
+                                HttpSession session,
+                                HttpServletResponse response) {
         Job job = jobRepository.findById(jobId).orElse(null);
         if (job != null) {
-            newJobQuery.setJob(job);
+            Person person = (Person) session.getAttribute("currentUser");
+            Person existingperson = personRepository.findById(person.getId()).orElse(null);
+
+            if (existingperson != null) {
+
+                newJobQuery.setJob(job);
+                newJobQuery.setPostedBy(existingperson);
+                return queryRepository.save(newJobQuery);
+            }
+
         }
-        return queryRepository.save(newJobQuery);
+
+        response.setStatus(204);
+        return null;
+
     }
 
     @PutMapping("api/query/{queryId}")
