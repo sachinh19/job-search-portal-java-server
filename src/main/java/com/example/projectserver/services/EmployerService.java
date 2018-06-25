@@ -85,17 +85,16 @@ public class EmployerService {
         return user;
     }
 
-    @PutMapping("api/employer")
+    @PutMapping("api/employer/{username}")
     public Employer updateEmployer(@RequestBody Employer newEmployer,
+                                   @PathVariable("username") String username,
                                    HttpServletRequest request,
                                    HttpServletResponse response) {
-        HttpSession session = request.getSession(false);
-        Employer employer = (Employer) session.getAttribute("currentUser");
-        int employerId = employer.getId();
-        Employer existingEmployer = employerRepository.findById(employerId).orElse(null);
+
+        Employer existingEmployer = employerRepository.findEmployerByUsername(username).orElse(null);
 
         if (existingEmployer != null) {
-            String username = newEmployer.getUsername();
+            String name = newEmployer.getUsername();
             String password = newEmployer.getPassword();
             String firstName = newEmployer.getFirstName();
             String lastName = newEmployer.getLastName();
@@ -106,10 +105,6 @@ public class EmployerService {
             Company company = companyRepository.findCompanyByName(companyName).orElse(null);
             String expDescription = newEmployer.getExpDescription();
             String aboutMe = newEmployer.getAboutMe();
-
-            if (username != null) {
-                existingEmployer.setUsername(username);
-            }
 
             if (password != null) {
                 existingEmployer.setPassword(password);
@@ -130,9 +125,15 @@ public class EmployerService {
             if (tenure != null) {
                 existingEmployer.setTenure(tenure);
             }
-            if (company != null) {
+            if (company == null) {
 
-                existingEmployer.setCompany(company);
+                company = companyRepository.save(company);
+            }
+
+            existingEmployer.setCompany(company);
+
+            if (companyName != null) {
+                existingEmployer.setCompanyName(companyName);
             }
             if (expDescription != null) {
                 existingEmployer.setExpDescription(expDescription);
@@ -143,7 +144,7 @@ public class EmployerService {
             existingEmployer.setUpdated(new Date());
             return employerRepository.save(existingEmployer);
         }
-                response.setStatus(204);
+        response.setStatus(204);
         return existingEmployer;
     }
 }
