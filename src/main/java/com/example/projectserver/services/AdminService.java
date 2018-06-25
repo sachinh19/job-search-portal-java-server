@@ -58,27 +58,21 @@ public class AdminService {
 
     }
 
-    @PutMapping("api/admin")
+    @PutMapping("api/admin/{username}")
     public Admin updateAdmin(@RequestBody Admin newAdmin,
+                             @PathVariable("username") String username,
                              HttpServletRequest request,
                              HttpServletResponse response) {
-        HttpSession session = request.getSession(false);
-        Admin admin = (Admin) session.getAttribute("currentUser");
-        int adminId = admin.getId();
-        Admin existingAdmin = adminRepository.findById(adminId).orElse(null);
+
+        Admin existingAdmin = adminRepository.findAdminByUsername(username).orElse(null);
 
         if (existingAdmin != null) {
-            String username = newAdmin.getUsername();
             String password = newAdmin.getPassword();
             String firstName = newAdmin.getFirstName();
             String lastName = newAdmin.getLastName();
             String email = newAdmin.getEmail();
             String expDescription = newAdmin.getExpDescription();
             String aboutMe = newAdmin.getAboutMe();
-
-            if (username != null) {
-                existingAdmin.setUsername(username);
-            }
 
             if (password != null) {
                 existingAdmin.setPassword(password);

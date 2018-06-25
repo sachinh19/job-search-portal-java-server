@@ -56,27 +56,21 @@ public class ModeratorService {
         return user;
     }
 
-    @PutMapping("api/moderator")
+    @PutMapping("api/moderator/{username}")
     public Moderator updateModerator(@RequestBody Moderator newModerator,
+                                     @PathVariable("username") String username,
                              HttpServletRequest request,
                              HttpServletResponse response) {
-        HttpSession session = request.getSession(false);
-        Moderator moderator = (Moderator)session.getAttribute("currentUser");
-        int moderatorId = moderator.getId();
-        Moderator existingModerator = moderatorRepository.findById(moderatorId).orElse(null);
+
+        Moderator existingModerator = moderatorRepository.findModeratorByUsername(username).orElse(null);
 
         if (existingModerator != null) {
-            String username = newModerator.getUsername();
             String password = newModerator.getPassword();
             String firstName = newModerator.getFirstName();
             String lastName = newModerator.getLastName();
             String email = newModerator.getEmail();
             String expDescription = newModerator.getExpDescription();
             String aboutMe = newModerator.getAboutMe();
-
-            if (username != null) {
-                existingModerator.setUsername(username);
-            }
 
             if (password != null) {
                 existingModerator.setPassword(password);

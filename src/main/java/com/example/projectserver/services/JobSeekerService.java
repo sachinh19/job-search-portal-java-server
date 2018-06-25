@@ -51,18 +51,17 @@ public class JobSeekerService {
         return user;
     }
 
-    @PutMapping("api/jobseeker")
+    @PutMapping("api/jobseeker/{username}")
     public JobSeeker updateJobSeeker(@RequestBody JobSeeker newJobSeeker,
+                                     @PathVariable("username") String username,
                                      HttpServletRequest request,
                                      HttpServletResponse response) {
 
-        HttpSession session = request.getSession(false);
-        JobSeeker jobSeeker = (JobSeeker) session.getAttribute("currentUser");
-        int jobSeekerId = jobSeeker.getId();
-        JobSeeker existingJobSeeker = jobSeekerRepository.findById(jobSeekerId).orElse(null);
+
+        JobSeeker existingJobSeeker = jobSeekerRepository.findJobSeekerByUsername(username).orElse(null);
 
         if (existingJobSeeker != null) {
-            String username = newJobSeeker.getUsername();
+            String name = newJobSeeker.getUsername();
             String password = newJobSeeker.getPassword();
             String firstName = newJobSeeker.getFirstName();
             String lastName = newJobSeeker.getLastName();
@@ -71,11 +70,6 @@ public class JobSeekerService {
             String totalExp = newJobSeeker.getTotalExp();
             String expDescription = newJobSeeker.getExpDescription();
             String aboutMe = newJobSeeker.getAboutMe();
-
-
-            if (username != null) {
-                existingJobSeeker.setUsername(username);
-            }
 
             if (password != null) {
                 existingJobSeeker.setPassword(password);
