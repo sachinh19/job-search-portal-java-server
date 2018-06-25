@@ -41,7 +41,6 @@ public class JobQuery {
     private Job job;
 
     @ManyToOne
-    @JsonIgnore
     @Getter
     @Setter
     private Person postedBy;
