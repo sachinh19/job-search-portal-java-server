@@ -148,8 +148,6 @@ public class JobService {
         } else {
             response.setStatus(204);
         }
-
-
     }
 
     @PutMapping("api/job/{jobId}")
