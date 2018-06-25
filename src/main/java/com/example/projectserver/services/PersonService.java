@@ -55,7 +55,7 @@ public class PersonService {
     }
 
     @GetMapping("api/person")
-    public List<Person> findAllPersons(HttpServletResponse response) {
+    public List<Person> findAllPersons() {
         return personRepository.findAll();
     }
 
@@ -74,12 +74,12 @@ public class PersonService {
     }
 
     @GetMapping("api/logout")
-    public void logout(HttpSession session, HttpServletResponse response) {
+    public void logout(HttpSession session) {
         session.invalidate();
     }
 
     @DeleteMapping("api/person/{personId}")
-    public void deletePerson(@PathVariable("personId") int personId, HttpServletResponse response) {
+    public void deletePerson(@PathVariable("personId") int personId) {
 
         Person existingPerson = personRepository.findById(personId).orElse(null);
         if (existingPerson != null) {
