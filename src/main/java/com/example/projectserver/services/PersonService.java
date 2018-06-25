@@ -31,18 +31,33 @@ public class PersonService {
     }
 
     @GetMapping("api/person/{personId}")
-    public Person findPersonById(@PathVariable("personId")int personId,HttpServletResponse response) {
+    public Person findPersonById(@PathVariable("personId") int personId, HttpServletResponse response) {
         Person person = personRepository.findById(personId).orElse(null);
-        if(person!=null)
+        if (person != null) {
             return person;
-        response.setStatus(204);
-        return null;
+        } else {
+            response.setStatus(204);
+            return null;
+        }
+
+    }
+
+    @GetMapping("api/person/currentuser")
+    public Person findCurrentUser(HttpSession session, HttpServletResponse response) {
+        Person currentUser = (Person) session.getAttribute("currentUser");
+
+        if (currentUser != null) {
+            return currentUser;
+        } else {
+            response.setStatus(204);
+            return null;
+        }
     }
 
     @GetMapping("api/person/username/{username}")
-    public Person findPersonByUsername(@PathVariable("username")String username,HttpServletResponse response) {
-                Person existingPerson = personRepository.findPersonByUsername(username).orElse(null);
-        if(existingPerson!=null)
+    public Person findPersonByUsername(@PathVariable("username") String username, HttpServletResponse response) {
+        Person existingPerson = personRepository.findPersonByUsername(username).orElse(null);
+        if (existingPerson != null)
             return existingPerson;
         response.setStatus(204);
         return null;
@@ -82,9 +97,9 @@ public class PersonService {
     }
 
     @PostMapping("api/login")
-    public Person login(@RequestBody Person person, HttpServletRequest request, HttpServletResponse response){
-                Person existingPerson = personRepository.findPersonByCredentials(person.getUsername(), person.getPassword()).orElse(null);
-        if(existingPerson != null){
+    public Person login(@RequestBody Person person, HttpServletRequest request, HttpServletResponse response) {
+        Person existingPerson = personRepository.findPersonByCredentials(person.getUsername(), person.getPassword()).orElse(null);
+        if (existingPerson != null) {
             HttpSession session = request.getSession(true);
             response.setStatus(200);
             session.setAttribute("currentUser", existingPerson);
@@ -96,15 +111,15 @@ public class PersonService {
     }
 
     @GetMapping("api/logout")
-    public void logout(HttpSession session, HttpServletResponse response) {
+    public void logout(HttpSession session) {
         session.invalidate();
     }
 
     @DeleteMapping("api/person/{personId}")
-    public void deletePerson(@PathVariable("personId") int personId, HttpServletResponse response){
+    public void deletePerson(@PathVariable("personId") int personId) {
 
         Person existingPerson = personRepository.findById(personId).orElse(null);
-        if(existingPerson != null){
+        if (existingPerson != null) {
             personRepository.delete(existingPerson);
         }
     }
