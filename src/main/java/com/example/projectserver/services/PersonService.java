@@ -169,14 +169,11 @@ public class PersonService {
         }
     }
 
-    @GetMapping("/api/isfollowing/{username}")
-    public List<Person> isFollowingUser(@PathVariable("username") String username,
-                                HttpSession session,
-                                HttpServletResponse response) {
-        Person isFollowing = personRepository.findPersonByUsername(username).orElse(null);
+    @GetMapping("/api/isfollowing")
+    public List<Person> isFollowingUser(HttpSession session, HttpServletResponse response) {
         Person isFollowedBy = (Person) session.getAttribute("currentUser");
 
-        if (isFollowing != null && isFollowedBy != null) {
+        if (isFollowedBy != null) {
             List<Person> followingList = isFollowedBy.getFollowing();
             return  followingList;
 
