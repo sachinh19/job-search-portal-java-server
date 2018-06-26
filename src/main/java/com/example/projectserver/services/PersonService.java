@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, allowCredentials = "true")
@@ -65,15 +66,15 @@ public class PersonService {
     }
 
     @GetMapping("api/person")
-    public List<Person> findAllPersons(HttpServletResponse response)    {
+    public List<Person> findAllPersons(HttpServletResponse response) {
         return personRepository.findAll();
     }
 
     @GetMapping("api/person/job/{username}")
-    public List<Job> findAllJobsForPerson(@PathVariable("username") String username, HttpServletResponse response)    {
+    public List<Job> findAllJobsForPerson(@PathVariable("username") String username, HttpServletResponse response) {
 
         Optional<Person> result = personRepository.findPersonByUsername(username);
-        if(result.isPresent()) {
+        if (result.isPresent()) {
             Person existingPerson = result.get();
             int personId = existingPerson.getId();
             Person person = personRepository.findById(personId).orElse(null);
@@ -86,7 +87,7 @@ public class PersonService {
     }
 
     @GetMapping("api/person/company/job/{username}")
-    public List<Job> findJobsForPersonByCompany(@PathVariable("username") String username, HttpServletResponse response)    {
+    public List<Job> findJobsForPersonByCompany(@PathVariable("username") String username, HttpServletResponse response) {
         Company company = companyRepository.findCompanyByName("defaultCompany").orElse(null);
         List<Job> jobs = jobRepository.findJobsByCompany(company);
         return jobs;
@@ -94,7 +95,7 @@ public class PersonService {
 
 
     @GetMapping("api/person/query")
-    public List<JobQuery> findAllQueriesForPerson(HttpServletRequest request, HttpServletResponse response)    {
+    public List<JobQuery> findAllQueriesForPerson(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession(false);
         Person existingPerson = (Person) session.getAttribute("currentUser");
         int personId = existingPerson.getId();
@@ -128,5 +129,61 @@ public class PersonService {
         if (existingPerson != null) {
             personRepository.delete(existingPerson);
         }
+    }
+
+
+    @PutMapping("/api/follow")
+    public void followUser(@RequestBody Person followUserObject,
+                           HttpSession session,
+                           HttpServletResponse response) {
+
+        String followUsername = followUserObject.getUsername();
+        Person toFollowUser = personRepository.findPersonByUsername(followUsername).orElse(null);
+        Person followedByUser = (Person) session.getAttribute("currentUser");
+
+        if (toFollowUser != null && followedByUser != null) {
+            List<Person> followingUsers = followedByUser.getFollowing();
+            followingUsers.add(toFollowUser);
+            followedByUser.setFollowing(followingUsers);
+            personRepository.save(followedByUser);
+        } else {
+            response.setStatus(204);
+        }
+    }
+
+    @PutMapping("/api/unfollow")
+    public void unfollowUser(@RequestBody Person unfollowUserObject,
+                           HttpSession session,
+                           HttpServletResponse response) {
+
+        String unfollowUsername = unfollowUserObject.getUsername();
+        Person followedByUser = (Person) session.getAttribute("currentUser");
+
+        if (followedByUser != null) {
+            List<Person> followingUsers = followedByUser.getFollowing();
+            followingUsers = followingUsers.stream().filter(followingUser -> !unfollowUsername.equals(followingUser.getUsername())).collect(Collectors.toList());
+            followedByUser.setFollowing(followingUsers);
+            personRepository.save(followedByUser);
+        } else {
+            response.setStatus(204);
+        }
+    }
+
+    @GetMapping("/api/isfollowing/{username}")
+    public List<Person> isFollowingUser(@PathVariable("username") String username,
+                                HttpSession session,
+                                HttpServletResponse response) {
+        Person isFollowing = personRepository.findPersonByUsername(username).orElse(null);
+        Person isFollowedBy = (Person) session.getAttribute("currentUser");
+
+        if (isFollowing != null && isFollowedBy != null) {
+            List<Person> followingList = isFollowedBy.getFollowing();
+            return  followingList;
+
+        } else {
+            response.setStatus(204);
+            return null;
+        }
+
     }
 }
