@@ -169,12 +169,12 @@ public class PersonService {
         }
     }
 
-    @GetMapping("/api/isfollowing")
+    @GetMapping("/api/following")
     public List<Person> isFollowingUser(HttpSession session, HttpServletResponse response) {
-        Person isFollowedBy = (Person) session.getAttribute("currentUser");
+        Person person = (Person) session.getAttribute("currentUser");
 
-        if (isFollowedBy != null) {
-            List<Person> followingList = isFollowedBy.getFollowing();
+        if (person != null) {
+            List<Person> followingList = person.getFollowing();
             return  followingList;
 
         } else {
@@ -182,5 +182,18 @@ public class PersonService {
             return null;
         }
 
+    }
+    @GetMapping("/api/followers")
+    public List<Person> isFollowedBy (HttpSession session, HttpServletResponse response) {
+        Person person = (Person) session.getAttribute("currentUser");
+
+        if (person != null) {
+            List<Person> followedByList = person.getFollowedBy();
+            return  followedByList;
+
+        } else {
+            response.setStatus(204);
+            return null;
+        }
     }
 }
