@@ -183,13 +183,27 @@ public class PersonService {
         }
 
     }
-    @GetMapping("/api/followers")
-    public List<Person> isFollowedBy (HttpSession session, HttpServletResponse response) {
-        Person person = (Person) session.getAttribute("currentUser");
+    @GetMapping("/api/followers/{username}")
+    public List<Person> getFollowedBy (@PathVariable("username") String username, HttpSession session, HttpServletResponse response) {
+        Person person = personRepository.findPersonByUsername(username).orElse(null);
 
         if (person != null) {
             List<Person> followedByList = person.getFollowedBy();
             return  followedByList;
+
+        } else {
+            response.setStatus(204);
+            return null;
+        }
+    }
+
+    @GetMapping("/api/following/{username}")
+    public List<Person> getFollowing (@PathVariable("username") String username, HttpSession session, HttpServletResponse response) {
+        Person person = personRepository.findPersonByUsername(username).orElse(null);
+
+        if (person != null) {
+            List<Person> followingList = person.getFollowing();
+            return  followingList;
 
         } else {
             response.setStatus(204);
