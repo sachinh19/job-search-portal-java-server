@@ -21,7 +21,7 @@ import java.util.*;
 
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600, allowCredentials = "true")
+@CrossOrigin(origins = "https://team2070.herokuapp.com", maxAge = 3600, allowCredentials = "true")
 public class JobService {
 
     private static final String API_URL = "https://authenticjobs.com/api/?api_key=fbf2b1502bc1ccf4aac2d014afb4ad28&method=aj.jobs.search&format=json&perpage=60";
