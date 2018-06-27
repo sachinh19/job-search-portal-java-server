@@ -125,12 +125,17 @@ public class EmployerService {
             if (tenure != null) {
                 existingEmployer.setTenure(tenure);
             }
-            if (company == null) {
+            if (company == null && companyName != null) {
+                Company newCompany = new Company();
+                newCompany.setName(companyName);
+                newCompany = companyRepository.save(newCompany);
+                existingEmployer.setCompany(newCompany);
 
-                company = companyRepository.save(company);
+            } else if (company != null) {
+                existingEmployer.setCompany(company);
             }
 
-            existingEmployer.setCompany(company);
+
 
             if (companyName != null) {
                 existingEmployer.setCompanyName(companyName);
